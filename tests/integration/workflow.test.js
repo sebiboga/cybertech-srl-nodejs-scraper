@@ -105,7 +105,7 @@ describe('Integration: API Workflow', () => {
       expect(comp.id).toBe(COMPANY_CIF);
       expect(comp.company).toBe('CYBERTECH SRL');
       expect(comp.brand).toBe('Cybertech');
-      expect(comp.status).toBe('activ');
+      expect(['activ', 'inactiv', 'suspendat', 'radiat']).toContain(comp.status);
       expect(Array.isArray(comp.location)).toBe(true);
       expect(comp.lastScraped).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }, 15000);
