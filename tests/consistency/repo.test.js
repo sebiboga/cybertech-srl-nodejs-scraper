@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import companyConfig from "../../config/company.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = process.env.GITHUB_REPOSITORY;
@@ -50,8 +51,6 @@ describe("Repository Configuration", () => {
       expect(data.homepage).toMatch(/^https?:\/\//);
       console.log(`✅ GitHub Pages URL: ${data.homepage}`);
     });
-
-    // deploy.yml removed — legacy GitHub Pages auto-deploys from docs/
   });
 
   describe("hosted HTML page", () => {
@@ -76,7 +75,7 @@ describe("Repository Configuration", () => {
       const html = await res.text();
       expect(html).toContain("<!DOCTYPE html>");
       expect(html).toContain("peviitor");
-      expect(html).toContain("EPAM");
+      expect(html).toContain(companyConfig.brand);
       console.log(`✅ GitHub Pages HTML loaded from ${pagesUrl}`);
     });
   });

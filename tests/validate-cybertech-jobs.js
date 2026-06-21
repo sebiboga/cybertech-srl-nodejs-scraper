@@ -1,5 +1,5 @@
 /**
- * EPAM-Specific Job URL Validator (fast, used by CI)
+ * Cybertech-Specific Job URL Validator (fast, used by CI)
  *
  * Quick nightly cleanup pass over jobs in SOLR. Uses HEAD requests only.
  * Called by .github/workflows/automation-testing.yml on the scheduled run.
@@ -49,20 +49,21 @@ async function main() {
     return;
   }
 
-  console.log(`\n⚠️ ${invalid.length} invalid jobs found`);
-  if (dryRun) {
-    console.log("(dry run — no deletions performed)");
-    return;
-  }
-  if (doDelete) {
-    for (const job of invalid) {
+  console.log(`\n❌ ${invalid.length} invalid jobs found:`);
+  for (const job of invalid) {
+    console.log(`  - ${job.url} (${job.title})`);
+    if (doDelete) {
+      console.log(`  Deleting...`);
       await deleteJobByUrl(job.url);
-      console.log(`Deleted: ${job.title}`);
     }
+  }
+
+  if (dryRun) {
+    console.log("\n⚠️ Dry run — no deletions performed. Pass --delete to remove.");
   }
 }
 
 main().catch(err => {
-  console.error("Fatal:", err.message);
+  console.error("Validation failed:", err);
   process.exit(1);
 });
