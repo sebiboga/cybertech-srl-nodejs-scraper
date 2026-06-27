@@ -90,13 +90,13 @@ describe('solr.js', () => {
   describe('queryCompanySOLR', () => {
     it('should return company data', async () => {
       mockFetch.mockResolvedValue(makeSolrResponse(1, [
-        { id: '12463238', company: 'CYBERTECH SRL', brand: 'Cybertech' }
+        { id: '12463238', company: 'CYBERTECH SRL', brand: 'CYBERTECH' }
       ]));
 
       const result = await solr.queryCompanySOLR('id:12463238');
 
       expect(result.numFound).toBe(1);
-      expect(result.docs[0].brand).toBe('Cybertech');
+      expect(result.docs[0].brand).toBe('CYBERTECH');
     });
 
     it('should return empty when company not found', async () => {

@@ -2,9 +2,7 @@
 
 ## Project Purpose
 
-This scraper extracts job listings from EPAM careers page (Romania only) and imports them to peviitor.ro.
-
-Target: https://careers.epam.com/en/jobs/romania
+This scraper extracts job listings for CYBERTECH SRL from public sources (ANOFM) and imports them to peviitor.ro.
 
 ## Model Schemas
 
@@ -50,7 +48,7 @@ When working on this scraper:
 5. **Check existing jobs in SOLR** - Query SOLR by CIF to see what jobs already exist
 6. **Check company status** - If ANAF status = "inactive" → DELETE existing jobs from SOLR and STOP
 7. **Save company.json** - Save all ANAF + Peviitor data for backup
-8. **Scrape new jobs** - Extract jobs from EPAM careers page (Romania)
+8. **Scrape new jobs** - Extract jobs from ANOFM (Romania)
 9. **Transform for SOLR** - Validate and fix job data:
    - location: Only Romanian cities allowed
    - tags: lowercase, no diacritics
@@ -71,7 +69,7 @@ node index.js
 node index.js --test
 ```
 
-> **Important**: Scraper does NOT delete jobs from other sources (ANOFM, etc). It only upserts EPAM Careers jobs. Existing jobs are preserved.
+> **Important**: Scraper does NOT delete jobs from other sources. It only upserts new jobs. Existing jobs are preserved.
 
 ## Full Workflow (automatic)
 
@@ -79,7 +77,7 @@ When running `node index.js`, the following steps happen automatically:
 
 1. **Check existing jobs count** - Query SOLR by CIF (read-only)
 2. **Validate company via ANAF** - Check company exists and is active
-3. **Scrape jobs** - Extract jobs from EPAM careers API (Romania only)
+3. **Scrape jobs** - Extract jobs from ANOFM API (Romania only)
 4. **Transform for SOLR** - Fix locations (only Romanian cities), normalize fields
 5. **Upsert to SOLR** - Add/update jobs (SOLR handles duplicates by URL)
 6. **Show Summary** - Log job counts
@@ -106,7 +104,7 @@ company.js (validate company)
     └── SOLR ──► check existing jobs count
     │
     ▼ (if active)
-scrape EPAM API (jobs for Romania)
+scrape ANOFM API (jobs for Romania)
     │
     ▼
 transformJobsForSOLR()

@@ -104,7 +104,7 @@ describe('Integration: API Workflow', () => {
       const comp = result.docs[0];
       expect(comp.id).toBe(COMPANY_CIF);
       expect(comp.company).toBe('CYBERTECH SRL');
-      expect(comp.brand).toBe('Cybertech');
+      expect(comp.brand).toBe('CYBERTECH');
       expect(['activ', 'inactiv', 'suspendat', 'radiat']).toContain(comp.status);
       expect(Array.isArray(comp.location)).toBe(true);
       expect(comp.lastScraped).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -116,7 +116,7 @@ describe('Integration: API Workflow', () => {
 
       expect(comp).toHaveProperty('id', COMPANY_CIF);
       expect(comp).toHaveProperty('company');
-      expect(comp).toHaveProperty('brand', 'Cybertech');
+      expect(comp).toHaveProperty('brand', 'CYBERTECH');
       expect(comp).toHaveProperty('status');
       expect(['activ', 'suspendat', 'inactiv', 'radiat']).toContain(comp.status);
       expect(comp).toHaveProperty('location');

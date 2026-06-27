@@ -3,7 +3,7 @@ import { generateJobsMarkdown } from "../../src/markdown-generator.js";
 const baseCompany = {
   id: "12463238",
   company: "CYBERTECH SRL",
-  brand: "Cybertech",
+  brand: "CYBERTECH",
   status: "activ",
   location: ["București"],
   website: ["https://cybertech.ro"],
@@ -34,7 +34,7 @@ describe("generateJobsMarkdown", () => {
 
     it("includes brand", () => {
       const md = generateJobsMarkdown(baseCompany, []);
-      expect(md).toContain("Cybertech");
+      expect(md).toContain("CYBERTECH");
     });
 
     it("includes status", () => {
