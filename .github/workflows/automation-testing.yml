@@ -26,25 +26,26 @@ jobs:
       - uses: actions/checkout@v5
       - name: Create auto-heal issue
         run: |
+          BODY="Workflow [**${{ github.workflow }}**](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed.
+
+          ## Context
+          - **Repository:** ${{ github.repository }}
+          - **Run URL:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          - **Branch:** ${{ github.ref }}
+          - **Commit:** ${{ github.sha }}
+          - **Trigger:** ${{ github.event_name }}
+
+          ## Instructions for opencode
+          1. Clone the repo and check out this branch.
+          2. Investigate the run logs (linked above).
+          3. Fix whatever caused the failure.
+          4. Commit and push the fix.
+          5. Close this issue — the next push will re-trigger the workflow."
+
           gh issue create \
             --title "🤖 Auto-heal: ${{ github.repository }} workflow failed $(date -u +%Y-%m-%d)" \
             --label "auto-heal" \
-            --body 'Workflow [**${{ github.workflow }}**](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed.
-
-## Context
-- **Repository:** ${{ github.repository }}
-- **Run URL:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-- **Branch:** ${{ github.ref }}
-- **Commit:** ${{ github.sha }}
-- **Trigger:** ${{ github.event_name }}
-
-## Instructions for opencode
-1. Clone the repo and check out this branch.
-2. Investigate the run logs (linked above).
-3. Fix whatever caused the failure.
-4. Commit and push the fix.
-5. Close this issue — the next push will re-trigger the workflow.
-'
+            --body "$BODY"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
