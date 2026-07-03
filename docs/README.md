@@ -14,7 +14,7 @@ job_seeker_ro_spider
 
 ## Ce face
 
-1. **Validează compania** — interoghează API-ul public ANAF ([demoanaf.ro](https://demoanaf.ro)) după CIF-ul CYBERTECH (12463238) și verifică:
+1. **Validează compania** — interoghează API-ul public ANAF ([demoanaf.ro](https://demoanaf.ro)) după CIF-ul CYBERTECH (12463238), cu fallback pe [cuifirma.ro](https://cuifirma.ro) dacă ANAF e indisponibil, și verifică:
    - Denumirea oficială: CYBERTECH SRL
    - Status: activ/inactiv/radiat
    - Adresa completă din registrul comerțului
@@ -39,7 +39,7 @@ job_seeker_ro_spider
 ├── company.json                # Cache ANAF (committed, TTL 7 zile, fallback la stale)
 ├── tests/
 │   ├── unit/          # 56 teste unitare (API-uri mock-uite)
-│   ├── integration/   # 16 teste de integrare (ANAF + SOLR live)
+│   ├── integration/   # 16 teste de integrare (ANAF + cuifirma.ro fallback + SOLR live)
 │   └── e2e/           # 13 teste end-to-end (pipelin complet)
 └── .github/workflows/
     ├── job-seeker-ro-spider.yml     # Rulează zilnic la 6 AM UTC
@@ -51,6 +51,7 @@ job_seeker_ro_spider
 | API | URL | Autentificare |
 |---|---|---|
 | ANAF (demoanaf) | `https://demoanaf.ro/api/...` | Public |
+| cuifirma.ro (fallback) | `https://cuifirma.ro/api/search?q=...` | Public (fallback când ANAF e jos) |
 | Peviitor | `https://api.peviitor.ro/v1/company/` | Public |
 | SOLR (job core) | `https://solr.peviitor.ro/solr/job` | `SOLR_AUTH` |
 | SOLR (company core) | `https://solr.peviitor.ro/solr/company` | `SOLR_AUTH` |

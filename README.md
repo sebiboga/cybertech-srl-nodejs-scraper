@@ -27,6 +27,7 @@ Proiectul automatizează colectarea zilnică a job-urilor Cybertech din România
 - Validează compania via ANAF (CUI, status activ/inactiv, adresă completă)
 - **Cache ANAF la 7 zile** — committed în repo, nu lovește demoANAF la fiecare scrape
 - **Fallback la cache stale** dacă ANAF e indisponibil
+- **Fallback la cuifirma.ro** dacă ANAF răspunde cu 403/erori (Cloudflare etc.)
 - Cross-validează cu Peviitor API
 - Stochează în SOLR (job core + company core)
 - Generează `docs/jobs.md` automat — accesibil pe GitHub Pages
@@ -47,7 +48,7 @@ Proiectul automatizează colectarea zilnică a job-urilor Cybertech din România
 │   ├── company.json            # Single source of truth: CIF, brand, URLs, API params
 │   └── company.js              # ESM loader for company.json
 ├── src/
-│   ├── anaf.js                 # ANAF API core (3 retries, 2s exponential backoff)
+│   ├── anaf.js                 # ANAF API core + cuifirma.ro fallback (3 retries, 2s exponential backoff)
 │   ├── job-validator.js        # URL validation (HEAD + content scan)
 │   └── markdown-generator.js   # Generates docs/jobs.md
 ├── tests/

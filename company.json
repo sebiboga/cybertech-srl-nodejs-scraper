@@ -1,0 +1,20 @@
+{
+  "validatedAt": "2026-07-03T16:00:00.000Z",
+  "source": "ANAF",
+  "brand": "CYBERTECH",
+  "anaf": {
+    "cui": 12463238,
+    "name": "CYBERTECH SRL",
+    "address": "",
+    "registrationNumber": "",
+    "caenCode": "",
+    "inactive": false
+  },
+  "peviitor": null,
+  "summary": {
+    "company": "CYBERTECH SRL",
+    "cif": "12463238",
+    "active": true,
+    "address": ""
+  }
+}

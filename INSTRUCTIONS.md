@@ -100,6 +100,7 @@ company.js (validate company)
     ├── load cache (tmp/company.json → company.json)
     │   └── if fresh (<7 days), skip ANAF entirely
     ├── ANAF API ──► get company name + CIF (only if cache stale/missing)
+    │   └── if ANAF 403/error ──► cuifirma.ro fallback
     ├── Peviitor API ──► validate company model
     └── SOLR ──► check existing jobs count
     │
@@ -131,7 +132,7 @@ generateJobsMarkdown() → docs/jobs.md
 | `company.js` | Validates company via ANAF + Peviitor; caches in root `company.json` (7-day TTL) and `tmp/company.json` |
 | `solr.js` | SOLR operations module - query, delete, upsert jobs + standalone commands |
 | `validate-jobs.js` | Manual deep validator (content-aware); thin CLI wrapper over `src/job-validator.js` |
-| `src/anaf.js` | ANAF API core module - searchCompany(brand) and getCompanyFromANAF(cif) with 3-retry/2s-backoff |
+| `src/anaf.js` | ANAF API core module - searchCompany(brand), getCompanyFromANAF(cif), plus cuifirma.ro fallback (getCompanyFromCuiFirma, searchCompanyCuiFirma) |
 | `src/markdown-generator.js` | Generates `docs/jobs.md` with company info and all scraped jobs |
 | `src/job-validator.js` | Shared validation primitives: `validateByHead`, `validateByContent`, `DEFAULT_EXPIRED_KEYWORDS` |
 | `demoanaf.js` | CLI entry point for ANAF module (thin wrapper around src/anaf.js) |
@@ -151,6 +152,7 @@ generateJobsMarkdown() → docs/jobs.md
 
 - **DemoANAF Search**: `https://demoanaf.ro/api/search?q=BRAND` - Search companies by name/brand
 - **DemoANAF Company**: `https://demoanaf.ro/api/company/:cui` - Get company details by CIF
+- **cuifirma.ro Fallback**: `https://cuifirma.ro/api/search?q=CIF` - Fallback company search (used when ANAF returns 403/error)
 - **Peviitor API**: `https://api.peviitor.ro/v1/company/`
 - **Solr**: `https://solr.peviitor.ro/solr/job` (auth: via `SOLR_AUTH` environment variable)
 

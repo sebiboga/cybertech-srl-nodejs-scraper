@@ -14,7 +14,7 @@
 
 | File | Description |
 |------|-------------|
-| `src/anaf.js` | ANAF API core module - exports getCompanyFromANAF(cif), getCompanyFromANAFWithFallback(cif, cached), searchCompany(brandName) |
+| `src/anaf.js` | ANAF API core module + cuifirma.ro fallback - exports getCompanyFromANAF, getCompanyFromANAFWithFallback, searchCompany, getCompanyFromCuiFirma, searchCompanyCuiFirma |
 | `src/markdown-generator.js` | Generates docs/jobs.md - exports generateJobsMarkdown(companyData, jobs) |
 | `src/job-validator.js` | Shared validation primitives - exports validateByHead(url), validateByContent(url, opts), DEFAULT_EXPIRED_KEYWORDS. Used by both `validate-jobs.js` and `tests/validate-epam-jobs.js`. |
 

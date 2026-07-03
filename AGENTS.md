@@ -8,6 +8,18 @@ This repo is a **derived scraper** generated from the EPAM template repository. 
 
 **🤖 If you've been asked to update this scraper, read [AGENTS.md](AGENTS.md) first.**
 
+### 9. Auto-Heal Issues
+When the `Automation Tests` workflow fails, a **GitHub Issue** is auto-created with label `auto-heal`. The issue contains:
+- Run URL, branch, commit, and trigger event
+- Instructions for opencode to investigate, fix, commit, push, and close
+
+**When you see an `auto-heal` labeled issue:**
+1. Read the issue body for the run URL and branch
+2. Checkout that branch
+3. Review the workflow logs to diagnose the failure
+4. Apply the fix
+5. Commit, push, and close the issue
+
 When making changes to this derivative:
 - **All company-specific identity lives in `config/company.json`** (CIF, brand, legalName, URLs, API params). Read from `config/company.js` in Node code, or via `jq` in workflows. Never hardcode in source files.
 - **Only the scraping logic in `index.js`** is company-specific. The output shape (`mapToJobModel`, `transformJobsForSOLR`) must stay uniform across all scrapers.

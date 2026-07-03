@@ -1,16 +1,16 @@
 /**
- * ANAF API Integration Module
+ * ANAF API Integration Module (with cuifirma.ro fallback)
  * 
  * PURPOSE: Provides interface to Romania's ANAF (National Agency for Fiscal Administration)
  * for company validation. Used to verify company existence, activity status, and get
  * official company details like registered name, address, and CIF.
  * 
- * NOTE: Uses demoanaf.ro which is a demonstration/mock API for development.
- * Production would use the actual ANAF API endpoints.
+ * Falls back to cuifirma.ro when ANAF is unavailable (Cloudflare block, etc.).
  * 
  * API Endpoints:
  * - Search: https://demoanaf.ro/api/search?q=<brand>
  * - Company Details: https://demoanaf.ro/api/company/<cif>
+ * - Fallback Search: https://cuifirma.ro/api/search?q=<brand>
  */
 
 import fetch from "node-fetch";
@@ -131,6 +131,82 @@ export async function getCompanyFromANAFWithFallback(cif, cachedData = null) {
 }
 
 // ============================================================================
+// CUIFIRMA.RO FALLBACK - Alternative data source when ANAF is unreachable
+// ============================================================================
+
+const CUIFIRMA_SEARCH_URL = "https://cuifirma.ro/api/search";
+
+/**
+ * Fetches company data from cuifirma.ro as a fallback when ANAF is unavailable.
+ * Maps the cuifirma.ro response shape to match the expected ANAF-like format.
+ * 
+ * @param {string} cif - Company CIF/CUI
+ * @returns {Promise<Object>} - Company data in ANAF-compatible shape
+ * @throws {Error} - If cuifirma.ro is also unreachable
+ */
+export async function getCompanyFromCuiFirma(cif) {
+  const url = `${CUIFIRMA_SEARCH_URL}?q=${encodeURIComponent(cif)}`;
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent": "job_seeker_ro_spider",
+      "Accept": "application/json"
+    }
+  });
+
+  if (!res.ok) {
+    throw new Error(`cuifirma.ro search error: ${res.status}`);
+  }
+
+  const json = await res.json();
+  const results = json.results || [];
+
+  // Find exact CIF match
+  const match = results.find(c => c.cui === cif);
+  if (!match) {
+    throw new Error(`cuifirma.ro: no company found for CIF ${cif}`);
+  }
+
+  console.log(`✅ cuifirma.ro found: ${match.name} (CIF ${match.cui})`);
+
+  // Map to ANAF-compatible shape
+  return {
+    cui: parseInt(match.cui, 10),
+    name: match.name,
+    address: match.location || "",
+    registrationNumber: "",
+    caenCode: "",
+    inactive: !match.is_active,
+    onrcStatusLabel: match.status_label || (match.is_active ? "Funcțiune" : "Inactiv"),
+    vatRegistered: false,
+    eFacturaRegistered: false,
+    _source: "cuifirma.ro"
+  };
+}
+
+/**
+ * Searches for companies by name on cuifirma.ro as fallback.
+ * @param {string} query - Company name or brand to search for
+ * @returns {Promise<Array>} - Array of matching company objects
+ * @throws {Error} - If search API fails
+ */
+export async function searchCompanyCuiFirma(query) {
+  const url = `${CUIFIRMA_SEARCH_URL}?q=${encodeURIComponent(query)}`;
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent": "job_seeker_ro_spider",
+      "Accept": "application/json"
+    }
+  });
+
+  if (!res.ok) {
+    throw new Error(`cuifirma.ro search error: ${res.status}`);
+  }
+
+  const json = await res.json();
+  return json.results || [];
+}
+
+// ============================================================================
 // ANAF API - Searching companies by name/brand
 // ============================================================================
 
@@ -142,6 +218,34 @@ export async function getCompanyFromANAFWithFallback(cif, cachedData = null) {
  * @returns {Promise<Array>} - Array of matching company objects
  * @throws {Error} - If search API fails
  */
+/**
+ * Searches for companies by name/brand, trying ANAF first then cuifirma.ro
+ * @param {string} brandName - Company name or brand to search for
+ * @returns {Promise<Array>} - Array of matching company objects
+ */
+export async function searchCompanyWithFallback(brandName) {
+  try {
+    return await searchCompany(brandName);
+  } catch {
+    console.log("⚠️ ANAF search failed, trying cuifirma.ro...");
+    return await searchCompanyCuiFirma(brandName);
+  }
+}
+
+/**
+ * Fetches company details by CIF, trying ANAF first then cuifirma.ro
+ * @param {string} cif - Company CIF/CUI
+ * @returns {Promise<Object>} - Company data
+ */
+export async function getCompanyFromANAFWithCuiFirmaFallback(cif) {
+  try {
+    return await getCompanyFromANAF(cif);
+  } catch (err) {
+    console.log(`⚠️ ANAF unreachable (${err.message}) — trying cuifirma.ro...`);
+    return await getCompanyFromCuiFirma(cif);
+  }
+}
+
 export async function searchCompany(brandName) {
   const url = `${ANAF_SEARCH_URL}?q=${encodeURIComponent(brandName)}`;
   const res = await fetch(url, {
