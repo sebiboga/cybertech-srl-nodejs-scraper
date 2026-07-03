@@ -17,6 +17,27 @@ function itIfSolr(name, fn, timeout) {
   return it.skip(`${name} (skipped: SOLR_AUTH not set)`, fn, timeout);
 }
 
+async function checkAnafAvailability() {
+  try {
+    const res = await fetch('https://demoanaf.ro/api/company/12463238', {
+      headers: { 'Accept': 'application/json' },
+      timeout: 5000
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+const HAS_ANAF = await checkAnafAvailability();
+
+function itIfAnaf(name, fn, timeout) {
+  if (HAS_ANAF) {
+    return it(name, fn, timeout);
+  }
+  return it.skip(`${name} (skipped: ANAF unavailable)`, fn, timeout);
+}
+
 beforeAll(() => {
   if (HAS_SOLR) {
     process.env.SOLR_AUTH = process.env.SOLR_AUTH;
@@ -35,7 +56,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       anaf = await import('../../src/anaf.js');
     }, 60000);
 
-    it('should find Cybertech in ANAF by CIF and check inactive flag', async () => {
+    itIfAnaf('should find Cybertech in ANAF by CIF and check inactive flag', async () => {
       const anafData = await anaf.getCompanyFromANAF(TEST_CIF);
       expect(anafData).toBeDefined();
       expect(anafData.cui.toString()).toBe(TEST_CIF);
@@ -146,7 +167,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       company = await import('../../company.js');
     }, 60000);
 
-    it('should find Cybertech in ANAF by CIF and check inactive flag', async () => {
+    itIfAnaf('should find Cybertech in ANAF by CIF and check inactive flag', async () => {
       const anafData = await anaf.getCompanyFromANAF(TEST_CIF);
       expect(anafData).toBeDefined();
       expect(anafData.cui.toString()).toBe(TEST_CIF);
@@ -176,7 +197,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       anaf = await import('../../src/anaf.js');
     });
 
-    it('should detect inactive/radiated companies via ANAF', async () => {
+    itIfAnaf('should detect inactive/radiated companies via ANAF', async () => {
       const results = await anaf.searchCompany('Cybertech');
 
       const nonActive = results.find(c => c.statusLabel !== 'Funcțiune');
