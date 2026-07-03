@@ -42,6 +42,7 @@ jobs:
           4. Commit and push the fix.
           5. Close this issue — the next push will re-trigger the workflow."
 
+          gh label create "auto-heal" --color "d73a4a" --description "Auto-heal issue for opencode" 2>/dev/null || true
           gh issue create \
             --title "🤖 Auto-heal: ${{ github.repository }} workflow failed $(date -u +%Y-%m-%d)" \
             --label "auto-heal" \
