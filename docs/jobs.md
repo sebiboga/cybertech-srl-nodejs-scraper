@@ -10,8 +10,8 @@
 | Location | București |
 | Website | [https://cybertech.ro](https://cybertech.ro) |
 | Careers | [https://cybertech.ro](https://cybertech.ro) |
-| Last Scraped | 2026-07-15 |
+| Last Scraped | 2026-07-16 |
 
 ## Current Job Listings (0)
 
-_Generated: 2026-07-15T07:46:20.343Z_
+_Generated: 2026-07-16T07:51:00.880Z_
